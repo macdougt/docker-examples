@@ -1,0 +1,27 @@
+#!/usr/bin/env expect
+
+spawn yo express
+
+
+expect "(Y/n)"
+send "n\r";
+
+expect "(Y/n)"
+send "n\r";
+
+expect "(Use arrow keys)"
+send "\r";
+
+expect "(Use arrow keys)"
+send "\x1b\x5b\x42";
+send "\x1b\x5b\x42\r";
+
+expect "(Use arrow keys)"
+send "\r";
+expect "(Use arrow keys)"
+send "\r";
+
+expect "(Y/n)"
+send "n\r";
+
+interact
