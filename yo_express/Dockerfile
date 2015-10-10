@@ -44,6 +44,17 @@ USER yeoman
 RUN /bin/sh -c 'expect yoExpress.exp'
 
 # Clean up the directory
+RUN rm -rf node_modules
+RUN npm cache clean
+RUN npm install
 
 CMD ["grunt"]
+
+# docker build -t yo_express_image 
+# docker run -d --name="yo_express_container" -p 3000:3000 yo_express_image
+# curl http://localhost:3000
+
+
+
+
 
