@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# args: <container id> <filepath within container> <filepath on host>
+# where filepath is the path and file name
+# docker cp <containerId>:/file/path/within/container /host/path/target
+
+
+display_usage() {
+  echo -e "\nUsage:\n$0 <container id> <filepath within container> <filepath on host>\n"
+  echo -e "\nSample usage:\n$0 sample_container /tmp/file_on_container /etc/hosts\n"
+}
+
+if [  $# -le 3 ]
+then
+        display_usage
+        exit 1
+fi
+
+# This script might generalized for commands, this is sampling diff
+DIFF_DIR=`mktemp -d 2>/dev/null || mktemp -d -t 'DIFF_DIR'`
+echo "This script will be operating in $DIFF_DIR"
+
+echo "docker cp $1:$2 $DIFF_DIR"
+docker cp $1:$2 $DIFF_DIR
+
+# Need to grab the file name from <filepath within container>
+FILENAME=$(echo $2 | rev | cut -d"/" -f1 | rev)
+echo $FILENAME
+
+diff $DIFF_DIR/$FILENAME $3
+
+rm $DIFF_DIR/*
+rmdir $DIFF_DIR
+
