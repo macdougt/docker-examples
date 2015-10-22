@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 # Start docker container with bash
 # If the container name or id is specified then start that container,
 # otherwise, offer the user the choice of the active containers
