@@ -1,37 +1,48 @@
 #!/usr/bin/env perl
-# Start docker image with bash
+# 
+# Use vi with locate pick list
 #
 # Usage:
-#   docs [image name|id]
+#   vloc <search term> <regular expression>
 #
 # Sample usage:
-#   docs my_image_name
+#   vloc Dockerfile
 #
 
 my $command;
-my $image_name_id = shift;
-if ($image_name_id) {
-   system "docker run -i -t $image_name_id bash";
-} else {
-   $command = "docker images --filter 'dangling=false'";
+my $search_term = shift;
+if ($search_term) {
+   $command = "locate $search_term";
 
    open (PIPE, "$command |") || die "Sorry, I couldn't open pipe.\n";
    while (<PIPE>) {
-      next if /^\s*REPOSITORY/;
       chomp($_);
       push(@list, $_);
    }
    close PIPE;
 
-   my $chosen_image_info = &getPick(\@list);
-   print "Bashing $chosen_image_info\n";
-
-   # Get the ID of the chosen image
-   my $chosen_id = substr($chosen_image_info, 0, index($chosen_container_info, "\s"));
-   my $chosen_name = (split /\s/, $chosen_image_info)[-1];
-   print "docker run -i -t $chosen_id bash  [$chosen_name]\n";
-   system "docker run -i -t $chosen_id bash";
+   my $chosen_file = &getPick(\@list);
+   print "Opening $chosen_file in vim...\n";
+   system "vim $chosen_file";
+} else {
+   &usage();
 }
+
+# Print usage
+sub usage {
+my $USAGE = <<"USAGE";
+Usage: 
+    vloc <search term>
+
+Sample usage:
+    vloc Dockerfile
+
+The sample will return a list of all files matching Dockerfile and 
+allow the user to choose one to be opened in vim.
+
+USAGE
+}
+
 # Print an interactive choice from a given list
 sub getPick {
    my $ra_list = shift;
