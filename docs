@@ -10,8 +10,12 @@
 
 my $command;
 my $image_name_id = shift;
+my @extra_flags = @ARGV;
+
+my $extra_flags_string = join(" ", @extra_flags);
+
 if ($image_name_id) {
-   system "docker run -i -t $image_name_id bash";
+   system "docker run -i -t $extra_flags_string $image_name_id bash";
 } else {
    $command = "docker images --filter 'dangling=false'";
 
@@ -29,8 +33,8 @@ if ($image_name_id) {
    # Get the ID of the chosen image
    my $chosen_id = substr($chosen_image_info, 0, index($chosen_container_info, "\s"));
    my $chosen_name = (split /\s/, $chosen_image_info)[-1];
-   print "docker run -i -t $chosen_id bash  [$chosen_name]\n";
-   system "docker run -i -t $chosen_id bash";
+   print "docker run -i -t $extra_flags_string $chosen_id bash  [$chosen_name]\n";
+   system "docker run -i -t $extra_flags_string $chosen_id bash";
 }
 # Print an interactive choice from a given list
 sub getPick {
