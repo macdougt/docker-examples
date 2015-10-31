@@ -1,0 +1,123 @@
+#!/usr/bin/env perl
+#
+# dockerstack <Dockerfile full path|directory with Dockerfile inside| image>
+#  Traverses and prints out image hierarchy with associated
+#  Dockerfile locations
+#  The map file that associates images to their Dockerfiles must be created 
+#  and updated with each docker build call, this can be achieved by wrapper 
+#  the docker command and adding a prebuild step to that performs the update
+#
+
+# The map file is in the JSON format
+use JSON;
+
+# Grab the information from the docker map file
+
+my $sep = $/;
+undef $/;
+
+# The docker map file maps Dockerfiles to image names
+my $rh_docker_map = &get_docker_map();
+
+# Set the separator to the original value
+$/ = $sep;
+
+# Allow utf8 output
+binmode(STDOUT, ":utf8");
+
+my $docker_file = shift; # this may be a Dockerfile, image name or directory
+
+# If the file does not end in 'Dockerfile' then check if it is a directory and 
+# if there is a Dockerfile in it
+
+my $initial_image;
+ 
+if (! -f $docker_file) { # Not a file
+   if ( -d $docker_file) { # Is a directory
+      # Look for Dockerfile
+      if (-f "$docker_file/Dockerfile") {
+	# Reassign variable to the Dockerfile
+        $docker_file = "$docker_file/Dockerfile";
+      } else {
+	print "You have supplied a directory without a Dockerfile.\n";
+        exit;
+      }
+   } else { # Not a directory; is it an image name?
+      if (exists($$rh_docker_map{$docker_file})) {
+	 $initial_image = $docker_file;
+	 $docker_file = $$rh_docker_map{$docker_file};
+      }	
+   }
+}
+
+
+my $done = 0;
+my $loop_counter = 1;
+
+# If the initial image is not already known
+# then try a reverse lookup for it
+if (! $initial_image) {
+   $initial_image = &reverse_lookup($docker_file, $rh_docker_map);
+}
+
+# Start the output
+# A descending set of images will be presented
+# Each image will be based on the image presented below it
+# until there is isn't an associated Dockerfile
+print "\n\n$initial_image\n";
+
+if ($docker_file) {
+   # Spacer to print before the images and associated Dockerfiles
+   my $spacer = "\x{2514}\x{252C}";
+   my $end_spacer = "\x{2514}\x{2500}";
+
+   while (! $done) {
+      my @docker_file_content;
+      open(DOCKER_FILE, "< $docker_file") or die "I cannot open $docker_file\n";
+         @docker_file_content = <DOCKER_FILE>;
+      close DOCKER_FILE;
+
+      foreach (@docker_file_content) {
+         if (/FROM\s+(\w+)/) {
+            my $parent_layer = $1;
+            # Check if the parent layer has an associated Dockerfile
+	    if (exists $$rh_docker_map{$parent_layer}) {
+	       print " " x $loop_counter."$spacer $parent_layer [$$rh_docker_map{$parent_layer}]\n";
+	       $docker_file = $$rh_docker_map{$parent_layer};
+	    } else {
+	       # end condition: no Dockerfile association
+               print " " x $loop_counter."$end_spacer $parent_layer\n";
+	       $done = 1;
+	    }
+         }
+      }
+      $loop_counter++;
+   }
+}
+
+print "\n\n";
+
+# Simply converts file with JSON map into in memory perl hash
+sub get_docker_map {
+   # Read the docker map file and create the map
+   my $docker_map_string;
+   my $docker_map_file = "/data/.docker_json_map";
+
+   open(MAP_FILE, "< $docker_map_file") or die "I cannot open $docker_map_file\n";
+      $docker_map_string = <MAP_FILE>;
+   close MAP_FILE;
+
+   return decode_json($docker_map_string);
+}
+
+
+# Takes the value the user wants to match and a hash reference
+# If possible, it returns the key associated with the value 
+sub reverse_lookup {
+   my $value = shift;
+   my $rh_hash = shift;
+   while (($key, $val) = each %$rh_hash) {
+     return $key if $val eq $value;
+   }
+}
+
