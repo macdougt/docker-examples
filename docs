@@ -31,8 +31,9 @@ if ($image_name_id) {
    print "Bashing $chosen_image_info\n";
 
    # Get the ID of the chosen image
-   my $chosen_id = substr($chosen_image_info, 0, index($chosen_container_info, "\s"));
-   my $chosen_name = (split /\s/, $chosen_image_info)[-1];
+   my @image_info = split /\s+/, $chosen_image_info;
+   my $chosen_id = $image_info[2];
+   my $chosen_name = $image_info[0];
    print "docker run -i -t $extra_flags_string $chosen_id bash  [$chosen_name]\n";
    system "docker run -i -t $extra_flags_string $chosen_id bash";
 }
