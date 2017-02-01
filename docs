@@ -42,7 +42,8 @@ sub getPick {
    my $ra_list = shift;
    if ($#{$ra_list} > 0) {
         print STDERR "List:\n";
-        for (my $i=0; $i <= $#{$ra_list}; $i++) {
+        # Reverse sort
+        for (my $i=$#{$ra_list}; $i >= 0; $i--) {
            print STDERR ($i+1);
            print STDERR ") $$ra_list[$i]\n";
         }
