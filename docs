@@ -41,17 +41,27 @@ if ($image_name_id) {
 sub getPick {
    my $ra_list = shift;
    if ($#{$ra_list} > 0) {
-        print STDERR "List:\n";
-        # Reverse sort
-        for (my $i=$#{$ra_list}; $i >= 0; $i--) {
-           print STDERR ($i+1);
-           print STDERR ") $$ra_list[$i]\n";
-        }
-        print STDERR "Make your choice\n";
-        my $choice = <>;
-        if ($choice =~ /\d+/) {
-           return $$ra_list[$choice-1];
-        }
+     print STDERR "List:\n";
+     # Reverse sort
+     for (my $i=$#{$ra_list}; $i >= 0; $i--) {
+       print STDERR ($i+1);
+       print STDERR ") $$ra_list[$i]\n";
+     }
+     print STDERR "Make your choice\n";
+     while (1) {
+       my $choice = <>;
+       if ($choice =~ /\d+/) {
+         return $$ra_list[$choice-1];
+       } elsif ($choice =~ /\w/) {
+         chomp($choice);
+      	 for (my $i=$#{$ra_list}; $i >= 0; $i--) {
+           if ($$ra_list[$i] =~ /$choice/) {
+             print STDERR ($i+1);
+             print STDERR ") $$ra_list[$i]\n";
+           }
+         }
+       }
+     }
    } elsif ($#{$ra_list} == 0) {
         return $$ra_list[0];
    } else {
