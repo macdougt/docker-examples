@@ -11,8 +11,9 @@ RUN apt-get update && apt-get install -y \
 	    expect \
 	    tree \
 	    wget \
-	    python
+	    python \
+	    vim
 
 RUN wget https://raw.githubusercontent.com/macdougt/bash-examples/master/install_t.bash
-RUN bash ./install_t.bash
+RUN yes | bash ./install_t.bash
 
