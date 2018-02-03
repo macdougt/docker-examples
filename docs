@@ -2,7 +2,7 @@
 # Start docker image with bash
 #
 # Usage:
-#   docs [image name|id]
+#   docs [image name|image id]
 #
 # Sample usage:
 #   docs my_image_name
@@ -17,7 +17,7 @@ my $extra_flags_string = join(" ", @extra_flags);
 if ($image_name_id) {
    system "docker run -i -t $extra_flags_string $image_name_id bash";
 } else {
-   $command = "docker images --filter 'dangling=false'";
+   $command = "docker image ls --filter 'dangling=false'";
 
    open (PIPE, "$command |") || die "Sorry, I couldn't open pipe.\n";
    while (<PIPE>) {

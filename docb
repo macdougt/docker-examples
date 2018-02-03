@@ -5,7 +5,7 @@
 # TODO Consider making the bash a parameter with bash as default
 #
 # Usage:
-#   docb [container name|id]
+#   docb [container name|container id]
 #
 # Sample usage:
 #   docb my_container_name
@@ -30,7 +30,7 @@ if ($container_name_id) {
    print "docker exec -i -t $extra_flags $container_name_id bash";
    system "docker exec -i -t $extra_flags $container_name_id bash";
 } else {
-   $command = "docker ps --filter 'status=running'";
+   $command = "docker container ls --filter 'status=running'";
 
    open (PIPE, "$command |") || die "Sorry, I couldn't open pipe.\n";
    while (<PIPE>) {
