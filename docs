@@ -15,6 +15,7 @@ my @extra_flags = @ARGV;
 my $extra_flags_string = join(" ", @extra_flags);
 
 if ($image_name_id) {
+   print "docker run -i -t $extra_flags_string $image_name_id bash\n";
    system "docker run -i -t $extra_flags_string $image_name_id bash";
 } else {
    $command = "docker image ls --filter 'dangling=false'";
