@@ -1,0 +1,10 @@
+FROM debian:jessie
+
+RUN apt-get update && apt-get install -y \
+	inotify-tools \
+	libnotify-bin \
+	&& rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /shared_directory
+CMD ["inotifywait","-r","-m","/shared_directory"]
+
+
