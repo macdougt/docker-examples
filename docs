@@ -15,8 +15,8 @@ my @extra_flags = @ARGV;
 my $extra_flags_string = join(" ", @extra_flags);
 
 if ($image_name_id) {
-   print "docker run -i -t $extra_flags_string $image_name_id bash\n";
-   system "docker run -i -t $extra_flags_string $image_name_id bash";
+   print "docker run -i -t $extra_flags_string $image_name_id sh -c 'bash || sh'\n";
+   system "docker run -i -t $extra_flags_string $image_name_id sh -c 'bash || sh'";
 } else {
    $command = "docker image ls --filter 'dangling=false'";
 
@@ -35,8 +35,8 @@ if ($image_name_id) {
    my @image_info = split /\s+/, $chosen_image_info;
    my $chosen_id = $image_info[2];
    my $chosen_name = $image_info[0];
-   print "docker run -i -t $extra_flags_string $chosen_id bash  [$chosen_name]\n";
-   system "docker run -i -t $extra_flags_string $chosen_id bash";
+   print "docker run -i -t $extra_flags_string $chosen_id sh -c 'bash || sh'  [$chosen_name]\n";
+   system "docker run -i -t $extra_flags_string $chosen_id sh -c 'bash || sh'";
 }
 # Print an interactive choice from a given list
 sub getPick {

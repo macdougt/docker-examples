@@ -27,8 +27,8 @@ if ($next_arg eq "--user") {
 
 
 if ($container_name_id) {
-   print "docker exec -i -t $extra_flags $container_name_id bash";
-   system "docker exec -i -t $extra_flags $container_name_id bash";
+   print "docker exec -i -t $extra_flags $container_name_id sh -c 'bash || sh'";
+   system "docker exec -i -t $extra_flags $container_name_id sh -c 'bash || sh'";
 } else {
    $command = "docker container ls --filter 'status=running'";
 
@@ -46,8 +46,8 @@ if ($container_name_id) {
    # Get the ID of the chosen container
    my $chosen_id = substr($chosen_container_info, 0, index($chosen_container_info, " "));
    my $chosen_name = (split /\s/, $chosen_container_info)[-1];
-   print "docker exec -i -t $extra_flags $chosen_id bash  [$chosen_name]\n";
-   system "docker exec -i -t $extra_flags $chosen_id bash";
+   print "docker exec -i -t $extra_flags $chosen_id sh -c 'bash || sh' [$chosen_name]\n";
+   system "docker exec -i -t $extra_flags $chosen_id sh -c 'bash || sh'";
 }
 # Print an interactive choice from a given list
 sub getPick {
