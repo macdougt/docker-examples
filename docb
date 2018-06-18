@@ -5,7 +5,7 @@
 # TODO Consider making the bash a parameter with bash as default
 #
 # Usage:
-#   docb [container name|container id]
+#   docb [container name|container id] [command]
 #
 # Sample usage:
 #   docb my_container_name
@@ -25,10 +25,17 @@ if ($next_arg eq "--user") {
   $container_name_id = $next_arg;
 }
 
+# Default command is shell, try bash fail to sh
+# otherwise the command become the remaining inputs on the CLI
+my $command =  join(" ", @ARGV);
+if (! $command) {
+  $command = "sh -c 'bash || sh'";
+}
 
 if ($container_name_id) {
-   print "docker exec -i -t $extra_flags $container_name_id sh -c 'bash || sh'";
-   system "docker exec -i -t $extra_flags $container_name_id sh -c 'bash || sh'";
+  my $full_command = "docker exec -i -t $extra_flags $container_name_id $command";
+   print "$full_command\n";
+   system $full_command;
 } else {
    $command = "docker container ls --filter 'status=running'";
 
