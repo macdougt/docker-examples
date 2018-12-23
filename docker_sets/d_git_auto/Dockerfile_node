@@ -1,0 +1,12 @@
+ARG base_image
+FROM $base_image
+
+RUN npm install
+CMD ["npm","start"]
+
+# Sample commands (not literal)
+# docker build --build-arg base_image=node --build-arg REPO="https://github.com/js_dev/sample_node_project_name.git" --build-arg REPO_NAME=sample_node_project_name -t sample_node_image .
+# docker build --build-arg base_image=sample_node_image -f Dockerfile_node -t node_git_auto_image .
+
+# Command assumes project will serve on port 3000
+# docker run -it -p 3002:3000 node_git_auto_image
