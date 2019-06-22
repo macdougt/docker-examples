@@ -33,15 +33,15 @@ if (! $command) {
 }
 
 if ($container_name_id) {
-  my $full_command = "docker exec -i -t $extra_flags $container_name_id $command";
+  my $full_command = "docker exec -it $extra_flags $container_name_id $command";
    print "$full_command\n";
    system $full_command;
 } else {
-   $command = "docker container ls --filter 'status=running'";
+   $command = "docker container ls --filter 'status=running' --format 'table {{.Names}}\t[{{.Image}}]\t{{.Status}}'";
 
    open (PIPE, "$command |") || die "Sorry, I couldn't open pipe.\n";
    while (<PIPE>) {
-      next if /^\s*CONTAINER ID/;
+      next if /^\s*NAMES/;
       chomp($_);
       push(@list, $_);
    }
@@ -53,8 +53,8 @@ if ($container_name_id) {
    # Get the ID of the chosen container
    my $chosen_id = substr($chosen_container_info, 0, index($chosen_container_info, " "));
    my $chosen_name = (split /\s/, $chosen_container_info)[-1];
-   print "docker exec -i -t $extra_flags $chosen_id sh -c 'bash || sh' [$chosen_name]\n";
-   system "docker exec -i -t $extra_flags $chosen_id sh -c 'bash || sh'";
+   print "docker exec -it $extra_flags $chosen_id sh -c 'bash || sh' [$chosen_name]\n";
+   system "docker exec -it $extra_flags $chosen_id sh -c 'bash || sh'";
 }
 # Print an interactive choice from a given list
 sub getPick {
