@@ -3,10 +3,10 @@ FROM ubuntu:latest
 ARG timezone=EST5EDT
 
 RUN apt-get update && \
-	apt-get install -y tzdata && \
+        apt-get install -y tzdata && \
 	ln -fs /usr/share/zoneinfo/${timezone} /etc/localtime && \
 	dpkg-reconfigure --frontend noninteractive tzdata && \
-      apt-get install -y \
+        apt-get install -y \
 	    mlocate \
 	    git \
 	    git-core \
