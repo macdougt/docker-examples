@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+USER="root"
+
+while [[ "$1" != "" ]]; do
+    case "$1" in
+        -u | --user )                 USERANDGROUP="$2"; shift;;
+	      -p | --permission )           PERMISSION="$2"; shift;;
+        * )                           args+=("$*")  # if no match, add it to the positional args
+    esac
+    shift
+done
+
+ARG_ARRAY=($args)
+SOURCE_FILE=${ARG_ARRAY[0]}
+DESTINATION=${ARG_ARRAY[1]}
+
+# Parse the second argument
+regex="(.*):(.*)";
+
+if [[ $DESTINATION =~ $regex ]]; then
+  CONTAINER_NAME="${BASH_REMATCH[1]}";
+  FULLPATH="${BASH_REMATCH[2]}";
+fi;
+
+echo "User and group: $USERANDGROUP and using permission $PERMISSION"
+echo "docker cp $args"
+docker cp $args
+
+echo "Setting the onwership and permissions for $DESTINATION"
+echo "docker exec -it --user root $CONTAINER_NAME /bin/bash -c \"chown $USERANDGROUP $FULLPATH && chmod $PERMISSION $FULLPATH\""
+docker exec -it --user root $CONTAINER_NAME /bin/bash -c "chown $USERANDGROUP $FULLPATH && chmod $PERMISSION $FULLPATH"
+
+docker exec -it --user root $CONTAINER_NAME ls -altr $FULLPATH
+
+# Test with ./dcp --user myuser:mygroup -p 755 file1 con1:/tmp/data/file1

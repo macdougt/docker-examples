@@ -16,7 +16,7 @@ if ($container_name_id) {
    print "$command\n";
    system $command;
 } else {
-   $command = "docker container ls --filter 'status=running' --format 'table {{.Names}}\t[{{.Image}}]\t{{.Status}}'";
+   $command = "docker container ls -a --format 'table {{.Names}}\t[{{.Image}}]\t{{.Status}}'";
 
    open (PIPE, "$command |") || die "Sorry, I couldn't open pipe.\n";
    while (<PIPE>) {
@@ -44,7 +44,7 @@ sub getPick {
           print STDERR ($i+1);
           print STDERR ") $$ra_list[$i]\n";
       }
-      print STDERR "Make your choice\n";
+      print STDERR "Which container do you wish to remove?\n";
       my $choice = <>;
       if ($choice =~ /\d+/) {
           return $$ra_list[$choice-1];
